@@ -49,12 +49,14 @@ export default function App() {
       });
   }, [query]);
 
-  const buildMessage = useCallback((p: Pattern, matchedRef: string): string => {
+    const buildMessage = useCallback((p: Pattern, matchedRef: string): string => {
     const refText = matchedRef || query.trim();
+    const fotoLink = p.foto ? `${window.location.origin}${p.foto}` : '';
     return (
       `Olá! Você solicitou a referência ${refText}.\n` +
-      `Como alternativa, temos o padrão Flaviense ${p.nomeFlaviense}, do fornecedor ${p.fornecedor}.\n` +
-      `Estou enviando a imagem para sua avaliação. Confira se atende ao que você procura; a tonalidade pode variar conforme a tela.`
+      `Como alternativa, temos o padrão Flaviense ${p.nomeFlaviense}, do fornecedor ${p.fornecedor}, com tonalidade e acabamento similares.\n` +
+      (fotoLink ? `Segue a foto para sua avaliação: ${fotoLink}\n` : '') +
+      `A tonalidade pode variar conforme a tela. Se preferir, podemos confirmar pela amostra física.`
     );
   }, [query]);
 
@@ -77,15 +79,21 @@ export default function App() {
     setWhatsappModal({ pattern, matchedRef });
   }, []);
 
-  const handleWhatsAppSend = useCallback(
+    const handleWhatsAppSend = useCallback(
     (phone: string | null) => {
       if (!whatsappModal) return;
       const msg = buildMessage(whatsappModal.pattern, whatsappModal.matchedRef);
       const encoded = encodeURIComponent(msg);
-      const url = phone
-        ? `https://wa.me/${phone}?text=${encoded}`
-        : `https://wa.me/?text=${encoded}`;
-      window.open(url, '_blank');
+      const fullPhone = phone && phone.length <= 11 ? `55${phone}` : phone;
+      const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+
+      const url = isMobile
+        ? fullPhone
+          ? `https://wa.me/${fullPhone}?text=${encoded}`
+          : `https://wa.me/?text=${encoded}`
+        : `https://web.whatsapp.com/send?${fullPhone ? `phone=${fullPhone}&` : ''}text=${encoded}`;
+
+      window.open(url, 'whatsapp');
       setWhatsappModal(null);
     },
     [whatsappModal, buildMessage]
