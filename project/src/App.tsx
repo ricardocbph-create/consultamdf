@@ -54,7 +54,7 @@ export default function App() {
     const fotoLink = p.foto ? `${window.location.origin}${p.foto}` : '';
     return (
       `Olá! Você solicitou a referência ${refText}.\n` +
-      `Como alternativa, temos o padrão Flaviense ${p.nomeFlaviense}, do fornecedor, com tonalidade e acabamento similares.\n` +
+      `Como alternativa, temos o padrão Flaviense ${p.nomeFlaviense}, com tonalidade e acabamento similares.\n` +
       (fotoLink ? `Segue a foto para sua avaliação: ${fotoLink}\n` : '') +
       `A tonalidade pode variar conforme a tela.`
     );
